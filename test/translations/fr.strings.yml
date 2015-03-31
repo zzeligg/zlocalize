@@ -1,0 +1,20 @@
+entry_00001:
+  id: 1
+  plural: false
+  ignore: false
+  source: "Yes"
+  translation: "Oui"
+
+entry_00002:
+  id: 2
+  plural: true
+  ignore: false
+  source: 
+   - "No messages"
+   - "One message"
+   - "{{count}} messages"
+  translation:
+   - "Aucun message"
+   - "Un message"
+   - "{{count}} messages"
+
