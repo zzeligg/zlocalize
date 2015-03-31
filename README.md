@@ -71,7 +71,7 @@ and run +bundle install+
    This will create `config/initializers/zlocalize.rb` with some default
    configuration values.
 
-   You can configure I18n and ZLocalize in each their own initializer files,
+   You can configure `I18n` and `ZLocalize` in each their own initializer files,
    or you can configure both in the same initializer.
 
    First, set the default locale:
