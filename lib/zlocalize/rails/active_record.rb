@@ -9,3 +9,5 @@ ActiveRecord::Base.send(:include, ZLocalize::Translatable::TranslatedColumns)
 require 'zlocalize/rails/decimal_attributes'
 ActiveRecord::Base.send(:include, ZLocalize::Translatable::LocalizedDecimalAttributes)
 
+require 'zlocalize/rails/translated_attributes_serializer'
+ActiveRecord::Base.send(:include, ZLocalize::Translatable::TranslatedAttributesSerializer)
