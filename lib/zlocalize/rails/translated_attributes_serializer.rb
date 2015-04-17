@@ -42,6 +42,10 @@ module ZLocalize
 
         alias :translate :read_translated_attribute
 
+        def translations
+          translated_attributes
+        end
+
         def translations=(locales)
           locales.each do |locale,terms|
             self.translated_attributes[locale] ||= HashWithIndifferentAccess.new
