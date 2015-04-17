@@ -38,7 +38,9 @@ module ZLocalize
 
       module ClassMethods
 
-        def translates_columns(column_names)
+        def translates_columns(column_names, options = {})
+
+          set_default_locale_for_translations(options[:default_locale])
 
           [column_names].flatten.each do |col_name|
             class_eval "def #{col_name}(options = {})
@@ -54,12 +56,18 @@ module ZLocalize
 
         def read_translated_column(col_name,locale,fetch_default = true)
           s = self.read_attribute("#{col_name}_#{locale}")
-          if !s.nil?
+          if s.blank? && fetch_default
+            unless (default_locale = evaluate_default_locale_for_translations).blank?
+              if default_locale.to_s != locale.to_s
+                attr_name = "#{col_name}_#{default_locale}"
+                if self.respond_to?(attr_name)
+                  return self.read_attribute(attr_name)
+                end
+              end
+            end
+          else
             return s
-          elsif fetch_default == true
-            return self.read_attribute("#{col_name}_#{ZLocalize.default_locale}")
           end
-          nil
         end
 
       end # module InstanceMethods

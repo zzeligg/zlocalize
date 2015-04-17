@@ -41,14 +41,18 @@ module ZLocalize
     end
 
     module AttachedTranslations #:nodoc:
+
       def self.included(base)
         base.extend(ClassMethods)
       end
 
       module ClassMethods
 
-        def has_translations
+        def has_translations(options = {})
           has_many :translations, :as => :translated, :dependent => :destroy
+
+          set_default_locale_for_translations(options[:default_locale])
+
           include ZLocalize::Translatable::AttachedTranslations::InstanceMethods
         end
 
@@ -56,12 +60,18 @@ module ZLocalize
 
       module InstanceMethods
 
-        def translate(attr_name,locale = nil)
+        def translate(attr_name,locale = nil, fetch_default = true)
           locale ||= ZLocalize.locale
           if tr = find_translation(attr_name,locale)
-            tr.value
+            return tr.value
           else
-            ''
+            unless (default_locale = evaluate_default_locale_for_translations).blank?
+              if default_locale.to_s != locale.to_s
+                if tr = find_translation(attr_name,default_locale)
+                  return tr.value
+                end
+              end
+            end
           end
         end
 

@@ -11,3 +11,6 @@ ActiveRecord::Base.send(:include, ZLocalize::Translatable::LocalizedDecimalAttri
 
 require 'zlocalize/rails/translated_attributes_serializer'
 ActiveRecord::Base.send(:include, ZLocalize::Translatable::TranslatedAttributesSerializer)
+
+require 'zlocalize/rails/default_locale_evaluator'
+ActiveRecord::Base.send(:include, ZLocalize::Translatable::DefaultLocaleEvaluator)

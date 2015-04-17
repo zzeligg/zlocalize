@@ -15,9 +15,11 @@ module ZLocalize
 
           serialize :translated_attributes, HashWithIndifferentAccess
 
+          set_default_locale_for_translations(options[:default_locale])
+
           [attribute_names].flatten.each do |attr_name|
             class_eval "def #{attr_name}(options = {})
-                          read_translated_attribute('#{attr_name}',(options[:locale] || ZLocalize.locale).to_s)
+                          read_translated_attribute('#{attr_name}',(options[:locale] || ZLocalize.locale).to_s, options[:fetch_default] == true)
                         end"
           end
 
@@ -31,13 +33,22 @@ module ZLocalize
 
           include ZLocalize::Translatable::TranslatedAttributesSerializer::InstanceMethods
         end
+
       end
 
       module InstanceMethods
 
-        def read_translated_attribute(attr_name,locale)
-          s = self.translated_attributes[locale]
-          s.is_a?(Hash) ? s[attr_name] : nil
+        def read_translated_attribute(attr_name,locale,fetch_default = true)
+          s = self.translated_attributes[locale].try(:'[]',attr_name)
+          if s.blank? && fetch_default
+            unless (default_locale = evaluate_default_locale_for_translations).blank?
+              if default_locale.to_s != locale.to_s
+                return self.translated_attributes[default_locale].try(:'[]',attr_name)
+              end
+            end
+          else
+            return s
+          end
         end
 
         alias :translate :read_translated_attribute
