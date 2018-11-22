@@ -2,13 +2,13 @@ rails_version = '4.1.0'
 
 Gem::Specification.new do |s|
   s.name        = 'zlocalize'
-  s.version     = '4.2.3'
+  s.version     = '4.2.4'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ['Charles Bedard', 'Stephane Volet']
   s.email = ['zzeligg@gmail.com', 'steph@zboing.ca']
-  s.date = '2015-04-02'
+  s.date = '2018-11-22'
   s.summary = 'Translation engine for Rails applications'
   s.required_ruby_version = '>= 1.9.3'
   s.files = Dir['CHANGELOG', 'README.rdoc', 'lib/**/*']
