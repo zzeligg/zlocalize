@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 require 'zlocalize'
 require 'rails'
 require 'active_record'

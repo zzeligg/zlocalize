@@ -1,5 +1,9 @@
 # -*- encoding : utf-8 -*-
 
+# This file is no longer used starting from Ruby 2.5, since rdoc does not use ruby_lex anymore.
+# see ./source_processor.rb which replaces this parser with the `parser` gem.
+#
+
 require 'rdoc'
 require 'rdoc/options'
 require 'rdoc/ruby_lex'

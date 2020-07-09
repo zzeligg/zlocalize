@@ -1,7 +1,6 @@
-# -*- encoding : utf-8 -*-
+class CreateTranslationsTable < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
 
-class CreateZLocalizeTranslationsTable < ActiveRecord::Migration
-   def self.up
+   def change
      create_table :translations do |t|
        t.string :translated_type
        t.integer :translated_id
@@ -11,11 +10,8 @@ class CreateZLocalizeTranslationsTable < ActiveRecord::Migration
 
        t.timestamps
     end
-    add_index 'translations', ['translated_type','translated_id'], :name => 'index_on_translated'
-    add_index 'translations', ['name','locale'], :name => 'index_for_lookup'
+    add_index 'translations', ['translated_type','translated_id'], name: 'index_on_translated'
+    add_index 'translations', ['name','locale'], name: 'index_for_lookup'
   end
 
-  def self.down
-    drop_table :translations
-  end
 end

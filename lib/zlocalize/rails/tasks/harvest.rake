@@ -1,6 +1,4 @@
-# -*- encoding : utf-8 -*-
-
-require 'zlocalize/harvester'
+require 'zlocalize/harvester' 
 
 namespace :zlocalize do
 
@@ -12,18 +10,18 @@ namespace :zlocalize do
        "  clear=true|false       Clearing the existing translations in output file (if it exists). (default: false)\n" +
        "  silent=true|false      If true, do not report progress. (default: false)\n" +
        "  add_paths              Comma-separated list of path specs (relative to Rails.root) to harvest in addition to default paths"
-
+       
   task :harvest => :environment do
     options = { :clear      => ['1','true'].include?(ENV['clear']),
                 :purge      => ['1','true'].include?(ENV['purge']),
                 :output     => ENV['output'].to_s.empty? ? 'config/locales/app-strings.yml' : ENV['output'],
-                :add_paths  => ENV['add_paths'].to_s.empty? ? [] : ENV['add_paths'].split(','),
+                :add_paths  => ENV['add_paths'].to_s.empty? ? [] : ENV['add_paths'].split(','), 
                 :silent     => ['1','true'].include?(ENV['silent']) }
-
+     
     h = ZLocalize::Harvester.new(File.expand_path(Rails.root), options)
     h.harvest
   end
-
+  
   desc "Display which entries are not translated in given file\n\n" +
        "Usage: rake zlocalize:check_untranslated file=FILE_PATH\n\n" +
        "where FILE_PATH is the path to the YAML translation file relative to Rails.Root\n"

@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 # Memory representation of a list of translation strings in a given language
 # Reads and writes each entry with a list of references to occurences in source files.
 

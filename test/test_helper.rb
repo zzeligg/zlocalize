@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 require 'rubygems'
 
 require 'minitest/autorun'
@@ -39,22 +37,10 @@ ActiveRecord::Base.logger.level = Logger::WARN
 
 ActiveRecord::Schema.define(:version => 0) do
 
-  create_table :item_with_attached_translations do |t|
-    # t.string  :name, :default => ''
-    # t.string  :description_fr, :default => nil
-    # t.string  :description_en, :default => nil
-    t.decimal :amount, :precision => 10, :scale => 2
-  end
-
-  create_table :item_with_translated_columns do |t|
+  create_table :items do |t|
     t.string  :name, :default => ''
     t.string  :description_fr, :default => nil
     t.string  :description_en, :default => nil
-    t.decimal :amount, :precision => 10, :scale => 2
-  end
-
-  create_table :item_with_serialized_translations do |t|
-    t.text :translated_attributes
     t.decimal :amount, :precision => 10, :scale => 2
   end
 
@@ -78,36 +64,11 @@ require File.join(File.dirname(__FILE__),'../lib/zlocalize/rails/translation')
 # - model with translated columns (through translates_columns)
 # -
 
-class ItemWithAttachedTranslation < ActiveRecord::Base
-
-  has_translations({ :default_locale => :get_default_locale })
+class Item < ActiveRecord::Base
+  has_translations
   accepts_nested_attributes_for :translations, :allow_destroy => true
+  translates_columns :description
   localize_decimal_attributes :amount
-
-  def get_default_locale
-    'en'
-  end
-
-
 end
 
-class ItemWithTranslatedColumn < ActiveRecord::Base
-
-  translates_columns :description, { :default_locale => :get_default_locale }
-  localize_decimal_attributes :amount
-
-  def get_default_locale
-    'en'
-  end
-end
-
-class ItemWithSerializedTranslation < ActiveRecord::Base
-
-  serialize_translations([:description], { :default_locale => :get_default_locale })
-  localize_decimal_attributes :amount
-
-  def get_default_locale
-    'en'
-  end
-end
 

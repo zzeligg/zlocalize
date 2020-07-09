@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 class TranslationValidator < ActiveModel::EachValidator
 
   def evaluate_required_locales(locales,record,attr_name,value)

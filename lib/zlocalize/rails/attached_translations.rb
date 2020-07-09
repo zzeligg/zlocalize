@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 #
 #  === Translation of attributes values for ActiveRecord ===
 #
@@ -41,18 +39,14 @@ module ZLocalize
     end
 
     module AttachedTranslations #:nodoc:
-
       def self.included(base)
         base.extend(ClassMethods)
       end
 
       module ClassMethods
 
-        def has_translations(options = {})
+        def has_translations
           has_many :translations, :as => :translated, :dependent => :destroy
-
-          set_default_locale_for_translations(options[:default_locale])
-
           include ZLocalize::Translatable::AttachedTranslations::InstanceMethods
         end
 
@@ -60,18 +54,12 @@ module ZLocalize
 
       module InstanceMethods
 
-        def translate(attr_name,locale = nil, fetch_default = true)
+        def translate(attr_name,locale = nil)
           locale ||= ZLocalize.locale
           if tr = find_translation(attr_name,locale)
-            return tr.value
+            tr.value
           else
-            unless (default_locale = evaluate_default_locale_for_translations).blank?
-              if default_locale.to_s != locale.to_s
-                if tr = find_translation(attr_name,default_locale)
-                  return tr.value
-                end
-              end
-            end
+            ''
           end
         end
 

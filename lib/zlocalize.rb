@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 zlocalize_path = File.expand_path(File.dirname(__FILE__))
 $:.unshift(zlocalize_path) if File.directory?(zlocalize_path) && !$:.include?(zlocalize_path)
 

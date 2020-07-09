@@ -1,4 +1,3 @@
-# -*- encoding : utf-8 -*-
 
 require 'zlocalize/rails/attached_translations'
 ActiveRecord::Base.send(:include, ZLocalize::Translatable::AttachedTranslations)
@@ -8,9 +7,3 @@ ActiveRecord::Base.send(:include, ZLocalize::Translatable::TranslatedColumns)
 
 require 'zlocalize/rails/decimal_attributes'
 ActiveRecord::Base.send(:include, ZLocalize::Translatable::LocalizedDecimalAttributes)
-
-require 'zlocalize/rails/translated_attributes_serializer'
-ActiveRecord::Base.send(:include, ZLocalize::Translatable::TranslatedAttributesSerializer)
-
-require 'zlocalize/rails/default_locale_evaluator'
-ActiveRecord::Base.send(:include, ZLocalize::Translatable::DefaultLocaleEvaluator)

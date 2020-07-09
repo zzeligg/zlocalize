@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 #  == Localized Decimal Attributes ==
 #
 # Provides a way to ensure Float attributes on ActiveRecord are converted to the internal format

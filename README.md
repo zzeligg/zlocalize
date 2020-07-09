@@ -1,4 +1,4 @@
-# ZLocalize - A translation engine for Rails 4+ applications
+# ZLocalize - A translation engine for Rails 6 applications
 
 `ZLocalize` provides string translation through YAML-defined dictionaries.
 
@@ -49,10 +49,11 @@ the source code.
 
 ## Requirements
 
-  * Ruby 1.9.3 or later
-  * Rails 4.1 or later
+  * Ruby 2.0 or later
+  * Rails 6.0 or later
 
-It might run on earlier Rails versions (4.0, 3.2), but this has not been tested.
+If you really must use this gem with a previous version of Ruby (< 2.0) or Rails (< 6.0),
+install [ZLocalize 4.2.3](https://github.com/zzeligg/zlocalize/releases/tag/4.2.3).
 
 ## Installation
 
@@ -66,12 +67,12 @@ and run +bundle install+
 
 1. Create an initializer:
 
-        rails generate zlocalize:initializer
+        bin/rails generate zlocalize:initializer
 
    This will create `config/initializers/zlocalize.rb` with some default
    configuration values.
 
-   You can configure `I18n` and `ZLocalize` in each their own initializer files,
+   You can configure I18n and ZLocalize in each their own initializer files,
    or you can configure both in the same initializer.
 
    First, set the default locale:
@@ -95,7 +96,7 @@ and run +bundle install+
         }
 
    * `:plural_select` is a proc evaluating the value of `n` for
-     translation of plural strings (in calls to `ZLocalize#pluralize`). It returns
+     translation of plural strings (in calls to `ZLocalize#pluralize` or `n_`). It returns
      the index of the Array element to use as the translation for plural
      expressions.
 
@@ -116,25 +117,27 @@ and run +bundle install+
 
 3. Set the other configuration values:
 
-   * `define_gettext_methods` : define `_()` and `n_()` (on Object class).
-     Defaults to `true`. If you do not define the gettext methods, you will
-     need to call `ZLocalize.translate` and `ZLocalize.pluralize` in your
-     application.
+  * `define_gettext_methods` : define `_()` and `n_()` (on `Object` class).
+    Defaults to `true`. If you do not define the gettext methods, you will
+    need to call `ZLocalize.translate` and `ZLocalize.pluralize` in your
+    application.
 
-   * `reload_per_request`: Hash with a key/value pair for each of your
-     application environments. Indicates if the translation files should be
-     reloaded on each request. Normally, production environment should not
-     reload on every request, but it may be practical to do so while
-     developing. Defaults to `{ :development => true, :test => false,
-     :production => false }`
+  * `return_source_on_missing`: Hash with a key/value pair for each of your
+    application environments. This indicates if missing translations in a
+    given locale should raise a `ZLocalize::MissingTranslationDataError`
+    exception. Defaults to `{ :development => true, :test => false,
+    :production => false, :staging => false }`
 
-   * `return_source_on_missing`: Hash with a key/value pair for each of your
-     application environments. This indicates if missing translations in a
-     given locale should raise a `ZLocalize::MissingTranslationDataError`
-     exception. Defaults to `{ :development => true, :test => true,
-     :production => true }`
+  * `harvest_paths` : Array of path patterns (same as `Dir.glob`) relative to
+    `Rails.root` that the ZLocalizer Harvester (see Harvester section below) will
+    scan to collect all calls to `_()`, `n_()`, `ZLocalize.translate` and
+    `ZLocalize.pluralize`. Defaults to
+    `["app/channels/**/*.rb", "app/controllers/**/*.rb", "app/helpers/**/*.rb",
+      "app/models/**/*.rb", "app/views/**/*.erb", "app/mailers/**/*.rb",
+      "app/jobs/**/*.rb", "lib/**/*.rb" ]`
 
-## In your application (Views, Controllers, etc.)
+
+## In your application (Controllers, Helpers, Views, Models, etc.)
 
 The idea is to simply start coding your application without thinking too much
 about how to translate it. The only thing to worry about is wrapping any String
@@ -160,7 +163,25 @@ Or in a controller:
       end
     end
 
-Models can also use ZLocalize translations, as well as Helpers.
+There are 2 methods to translate content:
+
+  * `ZLocalize.translate(key, options = {})` (and its gettext-style alias `_(key, options = {})`).
+    This method looks up the String `key` with the following `options`:
+
+      * `:locale`  : Lookup key in this locale. Defaults to `I18n.current_locale`.
+      * `:default` : Return this String if key is not found.
+      * `:return_source_on_missing` : Override the global `ZLocalize.config.return_source_on_missing` value.
+
+    Any other option key passed is meant to be an interpolated named value. See Interpolation section below.
+
+  * `ZLocalize.pluralize(key, count, options = {})` (and its gettext-style alias `n_(key, count, options = {})`).
+    This methods looks up the Array `key` (which is an Array of String), and computes the index of the String to
+    return based on the value of `count`. The index is computed using the `:plural_select`  Proc from
+    `ZLocalize.config` (see Basic Configuration section above).
+
+    The `options` are the same as the `translate`  method. Also, the `count` parameter is also automatically
+    treated as a value to be interpolated (when `{{count}}` token is present in translation string).
+
 
 ## Interpolation
 
@@ -217,7 +238,7 @@ namespace prefix and will return the string with only the backslash stripped
 
 Once you're ready to translate any work you've done:
 
-    rake zlocalize:harvest output=config/locales/translations/fr.strings.yml
+    bin/rake zlocalize:harvest output=config/locales/translations/fr.strings.yml
 
 The harvester will scan your application (models, controllers, helpers, views
 and any other path you might add). This will create a YAML file containing a
@@ -230,7 +251,7 @@ and .rb) files located in `config/locales` itself).
 
 However, you have complete control over the location of your `ZLocalize`
 translation files and can store them in any subdirectory of your Rails
-application.
+application. See Basic Configuration section above.
 
 Use `rake -D zlocalize:harvest` for a list of options.
 
@@ -294,12 +315,12 @@ Entries in the YAML file have the following format:
         - "Un message"
         - "{{count}} messages"
 
-Note that for plural entries, the source is the Array of strings you passed to
-`n_()` (or `ZLocalize.pluralize()` ). It can have any number of elements, as
-required by your base locale. The translation is also an Array, and it too can
-have any number of elements as required by the target locale. It is up to the
-`:plural_selector` proc to compute the correct index to use in the translation
-array.
+Note that for plural entries, the source is the Array of strings passed to
+`n_()` (or `ZLocalize.pluralize()` ) in the source file. It can have any number
+of elements, as required by your base locale. The translation is also an Array,
+and it too can have any number of elements as required by the target locale.
+It is up to the `:plural_selector` proc to compute the correct index to use
+in the translation array.
 
 ## Updating translations when the application changes
 
@@ -318,7 +339,7 @@ attributes. `ZLocalize` provides 2 mechanisms to achieve this:
 
 ### 1. Attached Translations
 
-This method stores the translation of values in a separate model (rightfully)
+This method stores the translation of values in a separate model (judiciously)
 called `Translation`.
 
 Any model can have multiple translated values in multiple locales attached to
@@ -411,8 +432,8 @@ This will generate an error message for each missing translation:
 
     p = @page.create
 
-    p.errors[:description]    # => ["content is missing its translation in fr",
-                                    "content is missing its translation in en"]
+    p.errors.on(:content)    # => ["content is missing its translation in fr",
+                                   "content is missing its translation in en"]
 
 The `required_locales` option can also be a Proc:
 
@@ -451,13 +472,13 @@ In your model:
 
 Then whenever you want to access the value of +title+ in the current locale:
 
-   <%= @page.title %>
+    <%= @page.title %>
 
 The wrapper method can take a Hash of options:
 
   * `:locale` to force a given locale
   * `:fetch_default` (`true|false`) to retrieve the the value of the attribute
-    in the `default_locale`.
+    in the `default_locale`. Defaults to `true`
 
 For example:
 
@@ -514,8 +535,8 @@ at
 
 ## Credits
 
-This plugin is inspired by original work by Thomas Fuchs (A Rails 1.X plugin named
-Localization).
+This plugin is based on original work by Thomas Fuchs (A Rails 1.X plugin named
+Localization), but it has been extended in many ways to make it answer our needs.
 
-Many thanks to Stephane Volet (steph@zboing.ca) for his contributions and ideas
+Many thanks to Stephane Volet (schmlblk@gmail.com) for his contributions and ideas
 to this gem.

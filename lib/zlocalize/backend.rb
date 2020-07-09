@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 require 'yaml'
 require 'zlocalize/translation_file'
 require 'zlocalize/config'
@@ -151,7 +149,7 @@ module ZLocalize
     end
 
     def reload!(force = false)
-      if force || !@initialized || (self.config.reload_per_request[Rails.env.to_sym] == true)
+      if force || !@initialized
         @initialized = false
         @translations = nil
         @translation_procs = nil

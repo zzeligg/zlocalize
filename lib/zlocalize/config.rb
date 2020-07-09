@@ -1,29 +1,26 @@
-# -*- encoding : utf-8 -*-
 module ZLocalize
 
   class Config
 
-    attr_reader :reload_per_request
     attr_reader :return_source_on_missing
-    attr_reader :reload_per_request
     attr_reader :locales
     attr_reader :define_gettext_methods
+    attr_reader :harvest_paths
 
     def initialize
-      @reload_per_request = { :development => true, :test => false, :production => false, :staging => false }
       @return_source_on_missing = { :development => true, :test => false, :production => false, :staging => false }
+      @harvest_paths = [
+        "app/channels/**/*.rb",
+        "app/controllers/**/*.rb",
+        "app/helpers/**/*.rb",
+        "app/models/**/*.rb",
+        "app/views/**/*.erb",
+        "app/mailers/**/*.rb",
+        "app/jobs/**/*.rb",
+        "lib/**/*.rb"
+      ]
       @locales = {}
       @use_global_gettext_methods = true
-    end
-
-    def reload_per_request=(value)
-      if value === true || value === false
-        [:development,:test,:production,:staging].each do |env|
-          @reload_per_request[env] = value
-        end
-      elsif value.is_a?(Hash)
-        @reload_per_request.merge!(value)
-      end
     end
 
     def return_source_on_missing=(value)

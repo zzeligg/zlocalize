@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 require 'rails/generators/base'
 
 # module here is deliberately named Zlocalize (as opposed to ZLocalize), for consistency
