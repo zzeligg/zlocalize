@@ -33,11 +33,19 @@ module ZLocalize
 
     def process(node)
       return unless node.is_a?(AST::Node)
-      if node.type == :send && node.children[0] == nil
-        if node.children[1] == :_
-          process_translate_call(node) and return
-        elsif node.children[1] == :n_
-          process_pluralize_call(node) and return
+      if node.type == :send
+        if node.children[0] == nil
+          if node.children[1] == :_
+            process_translate_call(node) and return
+          elsif node.children[1] == :n_
+            process_pluralize_call(node) and return
+          end
+        elsif is_zlocalize_const?(node)
+          if node.children[1] == :translate
+            process_translate_call(node) and return
+          elsif node.children[1] == :pluralize
+            process_pluralize_call(node) and return
+          end
         end
       end
       node.children.each do |n|
@@ -45,58 +53,50 @@ module ZLocalize
       end
     end
 
-    def process_translate_call(node)
-      tc = { name: node.children[1].to_s,
-             line_no: node.loc.selector.line,
-             char_no: node.loc.selector.column+1 }
-      # process the string parameter
-      unless node.children[2].is_a?(AST::Node) || node.children[2].type != :str
-        raise ArgumentError.new("First parameter to _() method must be a String")
+    def is_zlocalize_const?(node)
+      return node.is_a?(AST::Node) && node.type == :const && node.children[1] == :ZLocalize
+    end
+
+    def get_string_node_value(node)
+      unless node.is_a?(AST::Node) && node.type  == :str
+        raise ArgumentError.new("String Expected but got: #{node.inspect}")
       end
-      tc[:parameter] = node.children[2].children[0]
-      @translate_calls << tc
+      return node.children[0]
+    end
+
+    def get_string_array_node_value(node)
+      unless node.is_a?(AST::Node) || node.type != :array
+        raise ArgumentError.new("Array expected but got: #{node.inspect}")
+      end
+      a = []
+      for i in 0..node.children.size - 1
+        a << get_string_node_value(node.children[i])
+      end
+      a
+    end
+
+    def process_translate_call(node)
+      @translate_calls << { name: node.children[1].to_s,
+                            line_no: node.loc.selector.line,
+                            char_no: node.loc.selector.column+1,
+                            parameter: get_string_node_value(node.children[2]) }
       for i in 3..node.children.size-1
         process(node.children[i])
       end
     end
 
     def process_pluralize_call(node)
-      tc = { name: node.children[1].to_s,
-             line_no: node.loc.selector.line,
-             char_no: node.loc.selector.column+1 }
-      # process the Array parameter
-      unless node.children[2].is_a?(AST::Node) || node.children[2].type != :array
-        raise ArgumentError.new("First parameter to n_() method must be an Array of String")
-      end
-      tc[:parameter] = process_string_array(node.children[2])
-      @translate_calls << tc
+      @translate_calls << { name: node.children[1].to_s,
+                            line_no: node.loc.selector.line,
+                            char_no: node.loc.selector.column+1,
+                            parameter: get_string_array_node_value(node.children[2]) }
       for i in 3..node.children.size-1
         process(node.children[i])
       end
     end
 
-    def process_string_array(node)
-      a = []
-      for i in 0..node.children.size - 1
-        if node.children[i].type == :str
-          a << node.children[i].children[0]
-        else
-          raise ArgumentError.new("First parameter to n_() method must be and Array of String")
-        end
-      end
-      a
-    end
-
-
     def make_translation_entry(h)
-      # if ['_','n_'].include?(@name)
-      #   params = @parameters.dup
-      # elsif @name == 'ZLocalize' && @sub_method.is_a?(IdentifierExpression) && ['pluralize','translate'].include?(@sub_method.name)
-      #   params = @sub_method.parameters.dup
-      # else
-      #   return nil
-      # end
-      TranslationEntry.new('plural'     => h[:name] == 'n_',
+      TranslationEntry.new('plural'     => h[:name] == 'n_' || h[:name] == 'pluralize',
                            'source'     => h[:parameter],
                            'references' => [ "#{@relative_filename}:#{h[:line_no]}" ])
     end
