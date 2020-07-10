@@ -34,15 +34,15 @@ ZLocalize.config.return_source_on_missing = { development: false, test: false,
 
 ZLocalize.config.locales = {
   en: {
-     plural_select:     lambda { |n| n <= 0 ? 0 : (n > 1 ? 2 : 1) },
+     plural_select:     -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
      translations:      File.join(Rails.root,'config/locales/en.strings.yml'),
-     convert_float:     lambda { |s| s.to_s.gsub(',','') }
+     convert_float:     -> (s) { s.to_s.gsub(',','') }
   },
 #  fr: {
-#     plural_select:    lambda { |n| n <= 0 ? 0 : (n > 1 ? 2 : 1) },
+#     plural_select:    -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
 #     translations:     File.join(Rails.root,'config/locales/fr.strings.yml'),
-#     titleize:         lambda { |s| s.capitalize.to_s },
-#     convert_float:    lambda { |s| s.to_s.gsub(' ','').gsub(',','.') }
+#     titleize:         -> (s) { s.capitalize.to_s },
+#     convert_float:    -> (s) { s.to_s.gsub(' ','').gsub(',','.') }
 #  }
 }
 

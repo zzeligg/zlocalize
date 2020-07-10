@@ -8,11 +8,13 @@ require File.join(File.dirname(__FILE__),'../lib/zlocalize')
 
 require 'active_record'
 require File.join(File.dirname(__FILE__),'../lib/zlocalize/rails/active_record')
+require File.join(File.dirname(__FILE__),'../lib/zlocalize/rails/translation_validator')
 
 # other initialization here
 I18n.available_locales = [:fr, :en]
 I18n.locale = :en
 I18n.default_locale = :en
+I18n.load_path << File.join(File.dirname(__FILE__),'translations','fr.rails.yml')
 
 ZLocalize.config.define_gettext_methods = true
 ZLocalize.config.locales = {
@@ -37,11 +39,15 @@ ActiveRecord::Base.logger.level = Logger::WARN
 
 ActiveRecord::Schema.define(:version => 0) do
 
-  create_table :items do |t|
+  create_table :item_with_translated_columns do |t|
     t.string  :name, :default => ''
     t.string  :description_fr, :default => nil
     t.string  :description_en, :default => nil
     t.decimal :amount, :precision => 10, :scale => 2
+  end
+
+  create_table :item_with_attached_translations do |t|
+    t.string  :name, :default => ''
   end
 
   create_table :translations do |t|
@@ -59,16 +65,15 @@ end
 # Translation model
 require File.join(File.dirname(__FILE__),'../lib/zlocalize/rails/translation')
 
-# Item class is used to test both attribute translation modules:
-# - model with translations (through has_translations)
-# - model with translated columns (through translates_columns)
-# -
-
-class Item < ActiveRecord::Base
-  has_translations
-  accepts_nested_attributes_for :translations, :allow_destroy => true
+class ItemWithTranslatedColumns < ActiveRecord::Base
   translates_columns :description
   localize_decimal_attributes :amount
 end
 
+class ItemWithAttachedTranslations < ActiveRecord::Base
+  has_translations
+  accepts_nested_attributes_for :translations, :allow_destroy => true
+
+  validates :description, translation: { required_locales: -> { [ :en, :fr ] } }
+end
 

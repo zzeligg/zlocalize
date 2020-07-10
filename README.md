@@ -88,10 +88,10 @@ and run +bundle install+
 
         ZLocalize.config.locales = {
           :fr => {
-            :plural_select    => lambda { |n| n <= 0 ? 0 : (n > 1 ? 2 : 1) },
+            :plural_select    => -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
             :translations     => File.join(Rails.root,'config/locales/translations/fr.strings.yml'),
-            :titleize         => lambda { |s| s.capitalize.to_s },
-            :convert_float    => lambda { |s| s.to_s.gsub(' ','').gsub(',','.') }
+            :titleize         => -> (s) { s.capitalize.to_s },
+            :convert_float    => -> (s) { s.to_s.gsub(' ','').gsub(',','.') }
           }
         }
 
@@ -332,7 +332,7 @@ all strings already present (if a string is not used anymore, it will be removed
 only if you also add the `purge=true` parameter). It will of course also add any
 missing string to the existing translation file.
 
-## Translation of user-generated content
+## Translation of user-generated content (ActiveRecord)
 
 Any ActiveRecord model can be made to support multiple languages for its
 attributes. `ZLocalize` provides 2 mechanisms to achieve this:
@@ -352,6 +352,17 @@ that model. For example:
       ...
       has_translations
       ...
+      validates :title, translation: { required_locales: [:fr, :en] }
+      # `required_locales` can be a Symbol, in which case it refers to a method on the instance (no parameters)
+      # that will be called when the validation is performed.
+      # It can also be a Proc or lambda to be called, with (record, attribute, value) as parameters
+      # validates :title, translation: { required_locales: :get_required_locales }
+      # validates :title, translation: { required_locales: -> (record, attribute, value) { [:es, :fr] } }
+      ...
+      # return an Array of locale identifiers
+      def get_required_locales
+        [ :de, :en ]
+      end
     end
 
 From then on, any instance of Page will have the following methods:
@@ -424,7 +435,15 @@ of attached validations:
 
       has_translations
       validates_translation_of :content, :required_locales => [:fr, :en]
+      # or #
       validates :content, :translation => { :required_locales => [:fr, :en] }
+      # or #
+      validates :content, :translation => { :required_locales => :get_required_locales }
+      ...
+
+      def get_required_locales
+        [:es, :en]
+      end
 
     end
 
@@ -432,21 +451,31 @@ This will generate an error message for each missing translation:
 
     p = @page.create
 
-    p.errors.on(:content)    # => ["content is missing its translation in fr",
-                                   "content is missing its translation in en"]
+    p.errors[:content]    # => ["content is missing its translation in fr, en"]
 
-The `required_locales` option can also be a Proc:
+The `required_locales` option can also be a Proc/lambda:
 
-    validates_translation_of [:title, :content],
-       :required_locales => lambda { |record,attribute,value|
-                                      if attribute == 'content'
-                                        [:fr,:en]
-                                      else
-                                        [:fr]
-                                      end }
+    validates_translation_of [:title, :content], :required_locales => -> (record,attribute,value) {
+                                                    if attribute == 'content'
+                                                      [:fr,:en]
+                                                    else
+                                                      [:fr]
+                                                    end }
 
 The other standard validation options, such as `:message`, `:on`, `:if` and
-`:unless` are also supported.
+`:unless` are also supported. `:message` defaults to `:missing_translations` and this value should be
+added to the I18n translations for Rails, with the other ActiveRecord validation messages:
+
+      en:
+        errors:
+          messages: &errors_messages
+            inclusion: "n'est pas inclus(e) dans la liste"
+            exclusion: "n'est pas disponible"
+            ...
+            missing_translations: "doit être traduit en %{locales}"
+
+
+and the `%{locales}` token will be interpolated to the actual missing locales.
 
 ### 2. Translated columns
 
@@ -522,6 +551,18 @@ current locale:
     @account.balance = "8 765,43"
     => 8765.43
 
+Conversion from a locale-specific decimal value to `BigDecimal` is done by
+the `:convert_float` Proc declared in `ZLocalize.locales` (in the
+initializer). For example, in English:
+
+      ZLocalize.config.locales = {
+        :en => {
+           :plural_select     => -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
+           :convert_float     => -> (s) { s.to_s.gsub(',','') }
+        }
+        ...
+      }
+
 ## License
 
 `ZLocalize` is released under the MIT license.
@@ -538,5 +579,5 @@ at
 This plugin is based on original work by Thomas Fuchs (A Rails 1.X plugin named
 Localization), but it has been extended in many ways to make it answer our needs.
 
-Many thanks to Stephane Volet (schmlblk@gmail.com) for his contributions and ideas
+Many thanks to Stephane Volet (https://github.com/schmlblk) for his contributions and ideas
 to this gem.

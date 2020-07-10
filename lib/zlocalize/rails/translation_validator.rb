@@ -1,5 +1,13 @@
 class TranslationValidator < ActiveModel::EachValidator
 
+  def initialize(options = {})
+    # create a virtual attribute accessor for the expected translations
+    options[:attributes].each do |attr_name|
+      options[:class].attr_accessor attr_name
+    end
+    super
+  end
+
   def evaluate_required_locales(locales,record,attr_name,value)
     case locales
       when Symbol then record.send(locales)
@@ -7,7 +15,8 @@ class TranslationValidator < ActiveModel::EachValidator
       when String then [locales]
       else
          if locales.respond_to?("call")
-           locales.call(record,attr_name,value)
+            args = [record,attr_name,value].slice(0,locales.arity)
+            locales.call(*args)
          else
             raise(
               ActiveRecord::ActiveRecordError,
@@ -19,7 +28,7 @@ class TranslationValidator < ActiveModel::EachValidator
   end
 
   def validate_each(record,attr_name,value)
-    configuration = { :message => 'is missing its translation in {{locales}}',
+    configuration = { :message => :missing_translations,
                       :required_locales => record.respond_to?(:get_required_locales) ? :get_required_locales : [] }
     configuration.update(options)
     locales = evaluate_required_locales(configuration[:required_locales],record,attr_name,value)
@@ -27,7 +36,7 @@ class TranslationValidator < ActiveModel::EachValidator
     if locales.is_a?(Array)
       locales.each do |loc|
         begin
-          s = record.translate(attr_name,loc)
+          s = record.translate(attr_name.to_sym,loc)
         rescue ZLocalize::Translatable::TranslationError
           s = nil
         end
@@ -35,6 +44,7 @@ class TranslationValidator < ActiveModel::EachValidator
       end
     end
     if missing_locales.size > 0
+      # m = configuration[:message].to_s.gsub()
       record.errors.add(attr_name, configuration[:message], { :locales => missing_locales.to_sentence })
     end
   end
