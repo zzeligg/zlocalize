@@ -107,7 +107,7 @@ module ZLocalize
       @translate_calls.each do |c|
         e = make_translation_entry(c)
         if entries[e.source]
-          entries[e.source].references += te.references
+          entries[e.source].references += e.references
         else
           entries[e.source] = e
         end
