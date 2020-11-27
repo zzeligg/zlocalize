@@ -4,4 +4,3 @@ $:.unshift(zlocalize_path) if File.directory?(zlocalize_path) && !$:.include?(zl
 require 'active_support/core_ext/string/output_safety'
 require 'zlocalize/rails/railtie' # hook into Rails framework
 require 'zlocalize/backend'
-

@@ -1,7 +1,6 @@
 require 'zlocalize'
 require 'rails'
 require 'active_record'
-require 'sprockets/railtie'
 
 module ZLocalize
   class Railtie < Rails::Railtie

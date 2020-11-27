@@ -2,7 +2,7 @@ rails_version = '6.0'
 
 Gem::Specification.new do |s|
   s.name        = 'zlocalize'
-  s.version     = '6.0.1.2'
+  s.version     = '6.0.1.3'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
@@ -22,20 +22,20 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency('activesupport', "~> #{rails_version}")
       s.add_runtime_dependency('actionpack',    "~> #{rails_version}")
       s.add_runtime_dependency('i18n',          [">= 0.7", "< 2"])
-      s.add_runtime_dependency('parser',        "~> 2.7.1")
+      s.add_runtime_dependency('parser',        "~> 2.7")
     else
       s.add_dependency('activerecord',  "~> #{rails_version}")
       s.add_dependency('activesupport', "~> #{rails_version}")
       s.add_dependency('actionpack',    "~> #{rails_version}")
       s.add_dependency('i18n',          [">= 0.7", "< 2"])
-      s.add_dependency('parser',        "~> 2.7.1")
+      s.add_dependency('parser',        "~> 2.7")
     end
   else
     s.add_dependency('activerecord',  "~> #{rails_version}")
     s.add_dependency('activesupport', "~> #{rails_version}")
     s.add_dependency('actionpack',    "~> #{rails_version}")
     s.add_dependency('i18n',          [">= 0.7", "< 2"])
-    s.add_dependency('parser',        "~> 2.7.1")
+    s.add_dependency('parser',        "~> 2.7")
   end
 
 end
