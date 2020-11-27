@@ -1,5 +1,5 @@
 require 'parser/all'
-require 'action_view/template/handlers/erb'
+require 'action_view/template/handlers/erb/erubi'
 require File.join(File.dirname(__FILE__),'translation_file')
 require File.join(File.dirname(__FILE__),'harvester')
 
