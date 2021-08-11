@@ -199,7 +199,11 @@ module ZLocalize
       if File.exists?(filename)
         content = File.open(filename,"r") { |f| f.read }
         read_yaml_header(content)
-        entries = YAML::load(content)
+        begin
+          entries = YAML::load(content)
+        rescue StandardError => e
+          raise TranslationFileError.new("Error reading ZLocalize TranslationFile #{filename} : #{e.message}")
+        end
         if entries && !entries.is_a?(Hash)
           raise TranslationFileError.new("Invalid YAML translation file #{filename}\n\n#{entries.inspect}")
         end
