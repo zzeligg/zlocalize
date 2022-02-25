@@ -18,8 +18,12 @@ module ZLocalize
         content = ActionView::Template::Handlers::ERB::Erubi.new(content, escape: true, trim: true).src
       end
       @parser = create_parser_for_ruby_version
-      @stree = @parser.parse(content)
-      process(@stree)
+      begin
+        @stree = @parser.parse(content)
+        process(@stree)
+      rescue ArgumentError => ae
+        raise ArgumentError.new("In #{filename} #{ae.message}")
+      end
     end
 
     def create_parser_for_ruby_version
@@ -59,14 +63,14 @@ module ZLocalize
 
     def get_string_node_value(node)
       unless node.is_a?(AST::Node) && node.type  == :str
-        raise ArgumentError.new("String Expected but got: #{node.inspect}")
+        raise ArgumentError.new("On line #{node.loc.selector.line} at column #{node.loc.selector.column+1} : String Expected but got: #{node.inspect}")
       end
       return node.children[0]
     end
 
     def get_string_array_node_value(node)
       unless node.is_a?(AST::Node) || node.type != :array
-        raise ArgumentError.new("Array expected but got: #{node.inspect}")
+        raise ArgumentError.new("On line #{node.loc.selector.line} at column #{node.loc.selector.column+1} : Array expected but got: #{node.inspect}")
       end
       a = []
       for i in 0..node.children.size - 1
