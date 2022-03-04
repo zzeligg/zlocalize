@@ -196,7 +196,7 @@ module ZLocalize
     end
 
     def load(filename)
-      if File.exists?(filename)
+      if File.exist?(filename)
         content = File.open(filename,"r") { |f| f.read }
         read_yaml_header(content)
         begin
