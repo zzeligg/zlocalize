@@ -15,7 +15,7 @@ module ZLocalize
 
     attr_accessor :rails_root
 
-    DEFAULT_HARVEST_OPTIONS = { :output => 'config/locales/app-strings.yml',
+    DEFAULT_HARVEST_OPTIONS = { :output => 'config/translations/app-strings.yml',
                                 :overwrite_existing => false,
                                 :add_paths   => [],
                                 :silent => false,

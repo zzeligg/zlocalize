@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
-require './test_helper'
+
+require_relative './test_helper'
 
 # NOTE: the calls to `_()` in this file map to Minitest's DSL Object wrapper.
 # ZLocalize `_()` method is not used

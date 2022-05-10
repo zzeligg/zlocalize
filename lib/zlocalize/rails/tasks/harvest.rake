@@ -5,7 +5,7 @@ namespace :zlocalize do
   desc "Collect all translatable strings (used in _('...') and n_('...') calls) in your Rails application\n\n" +
        "Usage: rake zlocalize:harvest\n" +
        "Options and their defaults are:\n\n" +
-       "  output=FILE_PATH       Output file, relative to Rails.root (default: \'config/locales/app-strings.yml\')\n" +
+       "  output=FILE_PATH       Output file, relative to Rails.root (default: \'config/translations/app-strings.yml\')\n" +
        "  purge=true|false       Remove unused entries in the existing output file (if it exists). (default: false)\n" +
        "  clear=true|false       Clearing the existing translations in output file (if it exists). (default: false)\n" +
        "  silent=true|false      If true, do not report progress. (default: false)\n" +
@@ -14,7 +14,7 @@ namespace :zlocalize do
   task :harvest => :environment do
     options = { :clear      => ['1','true'].include?(ENV['clear']),
                 :purge      => ['1','true'].include?(ENV['purge']),
-                :output     => ENV['output'].to_s.empty? ? 'config/locales/app-strings.yml' : ENV['output'],
+                :output     => ENV['output'].to_s.empty? ? 'config/translations/app-strings.yml' : ENV['output'],
                 :add_paths  => ENV['add_paths'].to_s.empty? ? [] : ENV['add_paths'].split(','), 
                 :silent     => ['1','true'].include?(ENV['silent']) }
      

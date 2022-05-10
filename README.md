@@ -1,4 +1,4 @@
-# ZLocalize - A translation engine for Rails 6 applications
+# ZLocalize - A translation engine for Rails 6+ applications
 
 `ZLocalize` provides string translation through YAML-defined dictionaries.
 
@@ -49,7 +49,7 @@ the source code.
 
 ## Requirements
 
-  * Ruby 2.0 or later
+  * Ruby 2.4 or later
   * Rails 6.0 or later
 
 If you really must use this gem with a previous version of Ruby (< 2.0) or Rails (< 6.0),
@@ -89,7 +89,7 @@ and run +bundle install+
         ZLocalize.config.locales = {
           :fr => {
             :plural_select    => -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
-            :translations     => File.join(Rails.root,'config/locales/translations/fr.strings.yml'),
+            :translations     => File.join(Rails.root,'config/translations/fr.strings.yml'),
             :titleize         => -> (s) { s.capitalize.to_s },
             :convert_float    => -> (s) { s.to_s.gsub(' ','').gsub(',','.') }
           }
@@ -238,16 +238,12 @@ namespace prefix and will return the string with only the backslash stripped
 
 Once you're ready to translate any work you've done:
 
-    bin/rake zlocalize:harvest output=config/locales/translations/fr.strings.yml
+    bin/rake zlocalize:harvest output=config/translations/fr.strings.yml
 
 The harvester will scan your application (models, controllers, helpers, views
 and any other path you might add). This will create a YAML file containing a
 list of entries corresponding to all the strings used in the calls to
 `_()` and `n_()` in your source code.
-
-Notice that the (default) output file is in a subdirectory of `config/locales`.
-This is to avoid conflicts with the `I18n` module (which loads all .yml
-and .rb) files located in `config/locales` itself).
 
 However, you have complete control over the location of your `ZLocalize`
 translation files and can store them in any subdirectory of your Rails

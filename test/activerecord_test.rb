@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-require './test_helper'
+require_relative './test_helper'
 
 # NOTE: the calls to `_()` in this file map to Minitest's DSL Object wrapper.
 # ZLocalize `_()` method is not used
@@ -63,7 +63,7 @@ describe "ZLocalize ActiveRecord Attached Translations" do
   it "must return a missing translation validation error for description in French on a saved record" do
     i = ItemWithAttachedTranslations.new
     i.add_translation('description','en','English name')
-    i.save
+    i.valid?
     # verify that a Translation exists for our item
     _(i.errors[:description]).wont_be_empty
   end

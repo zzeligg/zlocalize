@@ -12,6 +12,7 @@ require 'rails/generators/base'
 
         def create_initializer_file
           template "initializer_template.rb", "config/initializers/zlocalize.rb"
+          FileUtils.mkdir_p "config/translations"
         end
 
       end

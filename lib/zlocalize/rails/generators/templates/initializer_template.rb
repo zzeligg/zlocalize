@@ -35,12 +35,12 @@ ZLocalize.config.return_source_on_missing = { development: false, test: false,
 ZLocalize.config.locales = {
   en: {
      plural_select:     -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
-     translations:      File.join(Rails.root,'config/locales/en.strings.yml'),
+     translations:      File.join(Rails.root,'config/translations/en.strings.yml'),
      convert_float:     -> (s) { s.to_s.gsub(',','') }
   },
 #  fr: {
 #     plural_select:    -> (n) { n <= 0 ? 0 : (n > 1 ? 2 : 1) },
-#     translations:     File.join(Rails.root,'config/locales/fr.strings.yml'),
+#     translations:     File.join(Rails.root,'config/translations/fr.strings.yml'),
 #     titleize:         -> (s) { s.capitalize.to_s },
 #     convert_float:    -> (s) { s.to_s.gsub(' ','').gsub(',','.') }
 #  }

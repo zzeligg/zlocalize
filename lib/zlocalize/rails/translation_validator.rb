@@ -27,7 +27,7 @@ class TranslationValidator < ActiveModel::EachValidator
     end
   end
 
-  def validate_each(record,attr_name,value)
+  def validate_each(record, attr_name, value)
     configuration = { :message => :missing_translations,
                       :required_locales => record.respond_to?(:get_required_locales) ? :get_required_locales : [] }
     configuration.update(options)
@@ -44,8 +44,7 @@ class TranslationValidator < ActiveModel::EachValidator
       end
     end
     if missing_locales.size > 0
-      # m = configuration[:message].to_s.gsub()
-      record.errors.add(attr_name, configuration[:message], { :locales => missing_locales.to_sentence })
+      record.errors.add(attr_name, :missing_translation, :message => configuration[:message], :locales => missing_locales.to_sentence)
     end
   end
 
