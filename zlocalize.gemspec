@@ -1,4 +1,4 @@
-rails_version = '6.0'
+rails_version = '5.2'
 
 Gem::Specification.new do |s|
   s.name        = 'zlocalize'
@@ -18,10 +18,12 @@ Gem::Specification.new do |s|
   if s.respond_to? :specification_version then
     s.specification_version = 4
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      # https://github.com/rails/rails
       s.add_runtime_dependency('activerecord',  ">= #{rails_version}")
       s.add_runtime_dependency('activesupport', ">= #{rails_version}")
       s.add_runtime_dependency('actionpack',    ">= #{rails_version}")
       s.add_runtime_dependency('i18n',          [">= 0.7", "< 2"])
+      # https://github.com/whitequark/parser
       s.add_runtime_dependency('parser',        ">= 2.7")
     else
       s.add_dependency('activerecord',  ">= #{rails_version}")
