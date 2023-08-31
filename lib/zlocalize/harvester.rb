@@ -83,7 +83,12 @@ module ZLocalize
 
     # collect entries in a source file
     def collect_entries(filename,root,is_erb = false)
-      sp = ZLocalize::SourceProcessor.new(filename,root,is_erb)
+      begin
+        sp = ZLocalize::SourceProcessor.new(filename,root,is_erb)
+      rescue Exception => e
+        puts "Error occured while parsing #{filename}:\n\n#{e.message}"
+        return
+      end
       sp.translation_entries.each do |key,te|
         if @new_entries[key]
           te.references.each do |ref|
