@@ -2,13 +2,13 @@ rails_version = '5.2'
 
 Gem::Specification.new do |s|
   s.name        = 'zlocalize'
-  s.version     = '6.0.6'
+  s.version     = '6.0.7'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ['Charles Bedard', 'Stephane Volet']
   s.email = ['zzeligg@gmail.com', 'steph@zboing.ca']
-  s.date = '2023-08-31'
+  s.date = '2024-03-06'
   s.license = 'MIT'
   s.homepage = 'https://github.com/zzeligg/zlocalize'
   s.summary = 'Translation engine for Rails applications'

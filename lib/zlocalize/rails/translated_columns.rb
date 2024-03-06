@@ -51,11 +51,11 @@ module ZLocalize
       module InstanceMethods
 
         def read_translated_column(col_name,locale,fetch_default = true)
-          s = self.read_attribute("#{col_name}_#{locale}")
+          s = self.send("#{col_name}_#{locale}")
           if !s.nil?
             return s
           elsif fetch_default == true
-            return self.read_attribute("#{col_name}_#{ZLocalize.default_locale}")
+            return self.send("#{col_name}_#{ZLocalize.default_locale}")
           end
           nil
         end
