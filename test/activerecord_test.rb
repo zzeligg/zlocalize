@@ -23,6 +23,7 @@ describe "ZLocalize ActiveRecord With Translated Columns" do
     ZLocalize.locale = :fr
     _(i.description(:fetch_default => true)).must_equal "English description"
     _(i.description(:fetch_default => false)).must_be_nil
+    _(i.description).must_equal "English description"
   end
 
 end

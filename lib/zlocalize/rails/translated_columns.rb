@@ -40,7 +40,9 @@ module ZLocalize
 
           [column_names].flatten.each do |col_name|
             class_eval "def #{col_name}(options = {})
-                          read_translated_column('#{col_name}',(options[:locale] || ZLocalize.locale),options[:fetch_default] == true)
+                          read_translated_column('#{col_name}', 
+                                                 (options[:locale] || ZLocalize.locale), 
+                                                 options[:fetch_default].nil? ? true : options[:fetch_default])
                         end"
           end
 
