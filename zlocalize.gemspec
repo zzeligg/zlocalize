@@ -37,7 +37,11 @@ Gem::Specification.new do |s|
     s.add_dependency('activesupport', ">= #{rails_version}")
     s.add_dependency('actionpack',    ">= #{rails_version}")
     s.add_dependency('i18n',          [">= 0.7", "< 2"])
-    s.add_dependency('parser',        ">= 2.7")
+    if RUBY_VERSION < "3.4.0"
+      s.add_dependency('parser',        ">= 2.7")
+    else
+      s.add_dependency('prism', ">= 1.2")
+    end
   end
 
 end
