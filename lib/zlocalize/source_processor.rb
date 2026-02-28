@@ -1,4 +1,11 @@
 require 'parser/all'
+# NOTE: This prevents Rails test environment to complain about this:
+#       `ActionView::Template::Error: undefined method 'new' for module Erubi`
+#       somehow Bundler or the autoload mechanism gets confused about which Erubi
+#       implementation is defined
+unless defined?(ActionView::Template::Handlers::ERB::Erubi)
+  require 'action_view/template/handlers/erb/erubi'
+end
 require 'action_view/template/handlers/erb/erubi'
 require File.join(File.dirname(__FILE__),'translation_file')
 require File.join(File.dirname(__FILE__),'harvester')

@@ -2,7 +2,7 @@ rails_version = '5.2'
 
 Gem::Specification.new do |s|
   s.name        = 'zlocalize'
-  s.version     = '6.0.8'
+  s.version     = '6.1.1'
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
@@ -37,7 +37,11 @@ Gem::Specification.new do |s|
     s.add_dependency('activesupport', ">= #{rails_version}")
     s.add_dependency('actionpack',    ">= #{rails_version}")
     s.add_dependency('i18n',          [">= 0.7", "< 2"])
-    s.add_dependency('parser',        ">= 2.7")
+    if RUBY_VERSION < "3.4.0"
+      s.add_dependency('parser',        ">= 2.7")
+    else
+      s.add_dependency('prism', ">= 1.2")
+    end
   end
 
 end
