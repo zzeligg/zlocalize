@@ -243,7 +243,7 @@ module ZLocalize
     end
 
     def non_translated_entries
-      @entries.sort_by_id.collect { |e| e.translation.to_s.strip == "" }
+      @entries.sort_by_id.select { |e| e.translation.to_s.strip == "" }
     end
 
    end # class TranlationFile
