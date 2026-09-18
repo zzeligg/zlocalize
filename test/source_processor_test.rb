@@ -201,6 +201,24 @@ class SourceProcessorErbFileTest < Minitest::Test
     assert_equal 3, entries.size
   end
 
+  def test_extracts_translation_calls_from_erb_template_with_yield
+    # Rails layouts use `yield` (bare and with a symbol argument). Erubi compiles
+    # this to top-level `yield`, which Prism rejects unless wrapped in a method.
+    erb = <<~ERB
+      <html>
+      <head><%= yield :head %></head>
+      <body><%= yield %></body>
+      <footer><%= _("Footer text") %></footer>
+      </html>
+    ERB
+    path = File.join(@dir, 'layout.html.erb')
+    File.write(path, erb)
+    entries = ZLocalize::SourceProcessor.new(path, @dir, true).translation_entries
+
+    assert_equal "Footer text", entries.fetch("Footer text").source
+    assert_equal ["layout.html.erb:4"], entries.fetch("Footer text").references
+  end
+
   def test_erb_reference_line_matches_the_template_line
     erb = "<p>nothing</p>\n<p>text</p>\n<p>text</p>\n<p><%= _(\"Later string\") %></p>\n"
     path = File.join(@dir, 'lines.html.erb')

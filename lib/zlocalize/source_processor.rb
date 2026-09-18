@@ -26,9 +26,15 @@ module ZLocalize
       @root = File.join(File.expand_path(root).downcase,'/') # add a trailing /
       @filename = File.expand_path(filename).downcase
       @relative_filename = @filename.gsub(@root,'')
+      @line_offset = 0
       content = File.open(filename, "r") { |f| f.read }
       if is_erb
         content = ActionView::Template::Handlers::ERB::Erubi.new(content, escape: true, trim: true).src
+        # Erubi compiles ERB to bare Ruby with top-level `yield`, which Prism
+        # rejects (yield is only valid inside a method). Wrap in a method and
+        # track the offset so reported line numbers still match the template.
+        content = "def __zlocalize_erb__\n#{content}\nend"
+        @line_offset = 1
       end
       begin
         process(content)
@@ -67,7 +73,7 @@ module ZLocalize
       argument_nodes = node.arguments.arguments
       source = plural ? get_string_array_node_value(argument_nodes[0]) : get_string_node_value(argument_nodes[0])
       @translate_calls << { name: node.name.to_s,
-                            line_no: node.message_loc.start_line,
+                            line_no: node.message_loc.start_line - @line_offset,
                             char_no: node.message_loc.start_column + 1,
                             parameter: source }
       # keep harvesting inside any nested arguments (e.g. options hashes containing
