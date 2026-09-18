@@ -1,4 +1,4 @@
-# ZLocalize - A translation engine for Rails 6+ applications
+# ZLocalize - A translation engine for Rails 7.1+ applications
 
 `ZLocalize` provides string translation through YAML-defined dictionaries.
 
@@ -49,8 +49,13 @@ the source code.
 
 ## Requirements
 
-  * Ruby 2.4 or later
-  * Rails 6.0 or later
+  * Ruby 3.4 or later
+  * Rails 7.1 or later
+
+The harvester parses application source with [Prism](https://github.com/ruby/prism),
+which ships in Ruby's standard library from Ruby 3.4 onwards. Earlier Ruby and
+Rails releases are no longer supported: the `parser` gem used by ZLocalize 6.x has
+no Ruby 4 target, and Rails 5.2/6.x are end-of-life.
 
 If you really must use this gem with a previous version of Ruby (< 2.0) or Rails (< 6.0),
 install [ZLocalize 4.2.3](https://github.com/zzeligg/zlocalize/releases/tag/4.2.3).
